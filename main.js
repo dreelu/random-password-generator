@@ -1,6 +1,4 @@
 import { changeLastCarac } from './utils.js'
-import { testPersonCond} from './utils.js'
-import { resetMenuOptions } from './utils.js'
 import readlineSync from 'readline-sync'
 
 let menuOption
@@ -21,12 +19,13 @@ function mainMenu() {
 
     menuOption = readlineSync.questionInt('Select an option: ')
     
+    console.clear()
     return menuOption
 }
 
 
 function generateMenu() {
-    let genPasswordOptions = ['letters (capital) ○', 'letters (tiny) ○', 'numbes (0-9) ○', 'special simbyols (!@#$%^&*()_+) ○', 'done']
+    let genPasswordOptions = ['letters (capital) ○', 'letters (tiny) ○', 'numbers (0-9) ○', 'special simbyols (!@#$%^&*()_+) ○', 'Done']
 
     //Reseting menu
     putTLetter = false
@@ -91,19 +90,22 @@ function generateMenu() {
                 }
                 break
             case 4:
-                console.log(rCarac)
                 done = true
                 break
             case -1:
                 mainMenu()
         }
+        console.clear()
     }
 }
 
 
-function generatePassword(length, atteempt = 0) {
-    
-    if (atteempt > 50) {
+function generatePassword(length, attempt = 0) {
+
+
+    length = passInfo.size
+
+    if (attempt > 50) {
         throw new Error('Não foi possível gerar uma senha válida após várias tentativas.')
     }
 
@@ -113,12 +115,12 @@ function generatePassword(length, atteempt = 0) {
     //Garantir o tamanho mínimo
     if (length > 3) {
         for (let i = 0; i < length; i++) {
-            let indiceRandom = Math.floor((Math.random() * rCarac))
+            let indiceRandom = Math.floor((Math.random() * rCarac.length))
             res += rCarac[indiceRandom]
         }
     } else {
         for (let i = 0; i < 3; i++) {
-            let indiceRandom = Math.floor((Math.random() * rCarac))
+            let indiceRandom = Math.floor((Math.random() * rCarac.length))
             res += rCarac[indiceRandom]
         }
     }
@@ -133,28 +135,28 @@ function generatePassword(length, atteempt = 0) {
     const hasSpecial = /[!@#$%^&*()_+]/.test(res)
 
     //Se não cumprir, gerar nova senha
-    testPersonCond(putTLetter, hasTLetter, generatePassword(length, atteempt + 1))
-    testPersonCond(putCletter, hasCLetter, generatePassword(length, atteempt + 1))
-    testPersonCond(putNumber, hasNumber, generatePassword(length, atteempt + 1))
-    testPersonCond(putSpecial, hasSpecial, generatePassword(length, atteempt + 1))
+    if (putTLetter && !hasTLetter) return generatePassword(length, attempt + 1)
+    if (putCletter && !hasCLetter) return generatePassword(length, attempt + 1)
+    if (putNumber && !hasNumber) return generatePassword(length, attempt + 1)
+    if (putSpecial && !hasSpecial) return generatePassword(length, attempt + 1)
 
-    return res
+    return console.log(`Senha: ${res}`)
     
 }
+
 function flow() {
-    let done = false
-    while (!done) {
+    while (true) {
         mainMenu()
 
         switch (menuOption) {
             case 1:
                 generateMenu()
-                // generatePassword()
+                generatePassword(passInfo.size)
                 break
             case 2:
             
             case 3:
-                done = true
+                return
         }
     }
 }
