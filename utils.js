@@ -3,11 +3,8 @@ export function changeLastCarac(str,caracAdd) {
     return cutLastCarac + caracAdd
 }
 
-export function resetMenuOptions(var1, var2, var3, var4, str) {
-    var1 = false
-    var2 = false
-    var3 = false
-    var4 = false
-    str = ''
-    return 
+export function showList(arr) {
+    for (let i = 0; i < arr.length; i++) {
+        console.log(`Senha ${i+1}: ${arr[i]}`)
+    }
 }

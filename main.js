@@ -1,7 +1,9 @@
-import { changeLastCarac } from './utils.js'
+import { changeLastCarac, showList } from './utils.js'
 import readlineSync from 'readline-sync'
 
-let menuOption
+let menuOption = ''
+let recentPasswords = []
+
 const passInfo = { value: '', size: 0 }
 let rCarac = passInfo.value
 
@@ -11,13 +13,23 @@ let putNumber = false
 let putSpecial = false
 
 function mainMenu() {
-    console.log('------------------')
+
+    console.log("  _____                                    _      _____                           _             ")
+    console.log(" │  __ ╲                                  │ │    ╱ ____│                         │ │            ")
+    console.log(" │ │__) │_ _ ___ _____      _____  _ __ __│ │   │ │  __  ___ _ __   ___ _ __ __ _│ │_ ___  _ __ ")
+    console.log(" │  ___╱ _` ╱ __╱ __╲ ╲ ╱╲ ╱ ╱ _ ╲│ '__╱ _` │   │ │ │_ │╱ _ ╲ '_ ╲ ╱ _ ╲ '__╱ _` │ __╱ _ ╲│ '__│")
+    console.log(" │ │  │ (_│ ╲__ ╲__ ╲╲ V  V ╱ (_) │ │ │ (_│ │   │ │__│ │  __╱ │ │ │  __╱ │ │ (_│ │ ││ (_) │ │   ")
+    console.log(" │_│   ╲__,_│___╱___╱ ╲_╱╲_╱ ╲___╱│_│  ╲__,_│    ╲_____│╲___│_│ │_│╲___│_│  ╲__,_│╲__╲___╱│_│   ")
+    console.log("                                                                                                ")
+    console.log("                                                                                                ")
+
+    console.log('------------------------------------------------------------------------------------------------')
     console.log('❶ - Generate new password')
     console.log('❷ - See recent passwords')
     console.log('❸ - Leave')
-    console.log('------------------')
+    console.log('------------------------------------------------------------------------------------------------')
 
-    menuOption = readlineSync.questionInt('Select an option: ')
+    menuOption = readlineSync.keyIn('Select an option: ')
     
     console.clear()
     return menuOption
@@ -41,7 +53,8 @@ function generateMenu() {
 
     
     passInfo.size = readlineSync.questionInt('How long will be the password? ')
-    
+    console.clear()
+
     let done = false
 
     while (!done) {
@@ -106,7 +119,8 @@ function generatePassword(length, attempt = 0) {
     length = passInfo.size
 
     if (attempt > 50) {
-        throw new Error('Não foi possível gerar uma senha válida após várias tentativas.')
+        console.log('It was not possible to generate a password. Please, try again.')
+        generateMenu()
     }
 
 
@@ -140,6 +154,8 @@ function generatePassword(length, attempt = 0) {
     if (putNumber && !hasNumber) return generatePassword(length, attempt + 1)
     if (putSpecial && !hasSpecial) return generatePassword(length, attempt + 1)
 
+    recentPasswords.push(res)
+
     return console.log(`Senha: ${res}`)
     
 }
@@ -149,13 +165,17 @@ function flow() {
         mainMenu()
 
         switch (menuOption) {
-            case 1:
+            case '1':
                 generateMenu()
                 generatePassword(passInfo.size)
                 break
-            case 2:
-            
-            case 3:
+            case '2':
+                showList(recentPasswords)
+                if (readlineSync.keyIn('\nPress 0 to return to the main menu.') == 0){
+                    console.clear()
+                    break
+                }
+            case '3':
                 return
         }
     }
